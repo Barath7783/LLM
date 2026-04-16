@@ -1,0 +1,15 @@
+from langchain_core.prompts import PromptTemplate
+from langchain_community.llms import HuggingFacePipeline
+from transformers import pipeline
+
+pipe = pipeline("text-generation", model="distilgpt2")
+llm = HuggingFacePipeline(pipeline=pipe)
+
+prompt = PromptTemplate(
+    input_variables=["topic"],
+    template="Explain {topic} in simple terms."
+)
+
+chain = prompt | llm
+
+print(chain.invoke({"topic": "Machine Learning"}))
