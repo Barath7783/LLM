@@ -1,15 +1,23 @@
+!pip install -q langchain langchain-community transformers
 from langchain_core.prompts import PromptTemplate
 from langchain_community.llms import HuggingFacePipeline
 from transformers import pipeline
 
-pipe = pipeline("text-generation", model="distilgpt2")
+pipe = pipeline(
+    "text-generation",
+    model="gpt2",
+    max_new_tokens=120,
+    temperature=0.7
+)
+
 llm = HuggingFacePipeline(pipeline=pipe)
 
-prompt = PromptTemplate(
-    input_variables=["topic"],
-    template="Explain {topic} in simple terms."
+# Prompt
+prompt = PromptTemplate.from_template(
+    "Write a paragraph about {topic} in simple terms."
 )
 
 chain = prompt | llm
 
-print(chain.invoke({"topic": "Machine Learning"}))
+result = chain.invoke({"topic": "AI in Education"})
+print(result)
