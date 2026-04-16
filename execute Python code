@@ -1,0 +1,31 @@
+!pip install transformers accelerate 
+import torch 
+from transformers import pipeline 
+import re 
+import sys 
+import io 
+generator = pipeline( 
+    "text-generation", 
+    model="Qwen/Qwen2.5-Coder-1.5B-Instruct", 
+    model_kwargs={"torch_dtype": torch.float16}, 
+    device_map="auto" 
+) 
+def chat_with_coder(user_prompt): 
+    messages = [ 
+        {"role": "system", "content": "You are a Python coding assistant. Write only valid Python code 
+inside ```python blocks. Do not explain."}, 
+        {"role": "user", "content": user_prompt}, 
+    ] 
+    output = generator(messages, max_new_tokens=512, do_sample=False) 
+    return output[0]['generated_text'][-1]['content'] 
+task = input("\n Enter your coding task (e.g., 'Print the first 10 prime numbers'): ") 
+    ai_response = chat_with_coder(task) 
+    code_match = re.search(r"```python\n(.*?)```", ai_response, re.DOTALL) 
+     
+if code_match: 
+        code_to_run = code_match.group(1) 
+ 
+        print(f"\n--- Generated Code ---\n{code_to_run}\n----------------------") 
+    else: 
+        print(" Could not extract valid code. Here is the raw response:") 
+        print(ai_response) 
