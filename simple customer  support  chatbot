@@ -1,0 +1,37 @@
+import re
+knowledge_base = {
+    "order status": "You can check your order status in the 'My Orders' section.",
+    "refund": "Refunds are processed within 5 to 7 business days.",
+    "delivery time": "Delivery usually takes 3 to 5 working days.",
+    "cancel order": "You can cancel your order before it is shipped.",
+    "contact support": "You can contact support at support@example.com",
+    "payment issue": "Please check your payment method or try again later.",
+    "return product": "Products can be returned within 7 days of delivery."
+}
+
+def preprocess(text):
+    text = text.lower()
+    text = re.sub(r"[^a-z\s]", "", text)
+    return text
+
+def get_response(user_input):
+    user_input = preprocess(user_input)
+
+    for keyword in knowledge_base:
+        if keyword in user_input:
+            return knowledge_base[keyword]
+
+    return "Sorry, I couldn't understand your query. Please contact customer support."
+
+print(" Customer Support Bot")
+print("Type 'exit' to quit\n")
+
+while True:
+    user = input("You: ")
+
+    if user.lower() == "exit":
+        print("Bot: Thank you for contacting us. Have a nice day!")
+        break
+
+    response = get_response(user)
+    print("Bot:", response)
