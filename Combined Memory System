@@ -1,0 +1,46 @@
+import time 
+class MemoryItem: 
+    def __init__(self, content, importance=1.0): 
+        self.content = content 
+        self.importance = importance 
+        self.timestamp = time.time() 
+    def decay(self, rate=0.01): 
+        age = time.time() - self.timestamp 
+        return self.importance / (1 + rate * age) 
+class WorkingMemory: 
+    def __init__(self, capacity=3): 
+        self.items = [] 
+        self.capacity = capacity 
+    def update(self, content): 
+        self.items.append(content) 
+        self.items = self.items[-self.capacity:] 
+class LongTermMemory: 
+    def __init__(self): 
+        self.items = [] 
+    def store(self, memory): 
+        self.items.append(memory) 
+    def retrieve(self, top_k=2): 
+        self.items.sort(key=lambda m: m.decay(), reverse=True) 
+        return [m.content for m in self.items[:top_k]] 
+class MemoryAgent: 
+    def __init__(self): 
+ 
+        self.working = WorkingMemory() 
+        self.long_term = LongTermMemory() 
+    def observe(self, text, importance=1.0): 
+        memory = MemoryItem(text, importance) 
+        self.long_term.store(memory) 
+        self.working.update(text) 
+    def recall(self): 
+        return { 
+            "working_memory": self.working.items, 
+            "long_term_memory": self.long_term.retrieve() 
+        } 
+agent = MemoryAgent() 
+agent.observe("Using Python", 1.5) 
+agent.observe("Deadline is Friday", 3.0) 
+agent.observe("User likes modular design", 2.0) 
+print(agent.recall())
+ 
+ 
+OUTPUT: 
